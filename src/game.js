@@ -107,7 +107,6 @@ class Game {
     }
 
     restart() {
-        document.getElementById('gameOverScreen').style.display = 'none';
 
         this.canvas.focus();
         
@@ -178,6 +177,11 @@ class Game {
         }
 
         this.startTimer += delta;
+
+        if (this.score >= 60) {
+            this.winGame();
+            return;
+        }
     }
 
     updateMoves(delta) {
@@ -194,6 +198,15 @@ class Game {
         this.ball.position.x = this.player.position.x;
         this.ball.position.y = 0.15;
         this.ball.position.z = this.player.position.z + 1;
+    }
+
+    winGame() {
+        this.engine.stopRenderLoop();
+        document.getElementById('winScore').innerText = `Score: ${this.score}`;
+        document.getElementById('winScreen').style.display = 'flex';
+        this.playMusic.stop();
+        this.menuMusic.stop();
+        this.endingMusic.stop();
     }
 
     async createScene() {
@@ -259,10 +272,9 @@ class Game {
 
         res = await SceneLoader.ImportMeshAsync("", "", stadiumUrl, this.scene);
         res.meshes[0].name = "stadium";
-        res.meshes[0].position = new Vector3(14.32, 19.23, 43.27);
+        res.meshes[0].position = new Vector3(12, 20.09, 50.37);
         res.meshes[0].rotation = new Vector3(0, 0, 0);
         res.meshes[0].scaling = new Vector3(2, 2, 2);
-
 
 
         res = await SceneLoader.ImportMeshAsync("", "", obstacle1Url, this.scene);

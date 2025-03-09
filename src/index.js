@@ -35,8 +35,17 @@ window.onload = () => {
   const restartButton = document.getElementById('restartButton');
   const gameOverScreen = document.getElementById('gameOverScreen');
   restartButton.addEventListener('click', function () {
+    gameOverScreen.style.display = 'none';
     game.restart();
   });
 
+  const restartAfterWinButton = document.getElementById('restartAfterWinButton');
+  const winScreen = document.getElementById('winScreen');
+  if (restartAfterWinButton) {
+    restartAfterWinButton.addEventListener('click', function() {
+      winScreen.style.display = 'none';
+      game.restart();
+    });
+  }
 
 }
