@@ -17,7 +17,7 @@ import obstacle1Url from "../assets/models/obs.glb";
 import ballUrl from "../assets/models/football__soccer_ball.glb";
 import stadiumUrl from "../assets/models/stadiumV2.glb";
 import menuMusicUrl from "../assets/sounds/menuMusic.mp3";
-import playMusicUrl from "../assets/sounds/playMusic.wav";
+import playMusicUrl from "../assets/sounds/playMusic.mp3";
 import endingMusicUrl from "../assets/sounds/endingMusic.mp3";
 
 
@@ -78,6 +78,7 @@ class Game {
         this.menuMusic.stop();
         this.playMusic.play();
         this.endingMusic.stop();
+        this.canvas.focus();
         this.engine.runRenderLoop(() => {
 
             let delta = this.engine.getDeltaTime() / 1000.0;
@@ -97,12 +98,35 @@ class Game {
     }
 
     endGame() {
-        this.engine.stopRenderLoop(); 
-        document.getElementById('finalScore').innerText = `Score: ${this.score}`;  
+        this.engine.stopRenderLoop();
+        document.getElementById('finalScore').innerText = `Score: ${this.score}`;
         document.getElementById('gameOverScreen').style.display = 'flex';
         this.playMusic.stop();
         this.menuMusic.stop();
         this.endingMusic.play();
+    }
+
+    restart() {
+        document.getElementById('gameOverScreen').style.display = 'none';
+
+        this.canvas.focus();
+        
+        this.player.position.set(0, TRACK_HEIGHT / 2, 6);
+        this.ball.position.set(0, 0.15, 7);
+        
+        for (let i = 0; i < this.obstacles.length; i++) {
+            let obstacle = this.obstacles[i];
+            let x = Scalar.RandomRange(-TRACK_WIDTH / 2, TRACK_WIDTH / 2);
+            let z = Scalar.RandomRange(SPAWN_POS_Z - 15, SPAWN_POS_Z + 15);
+            obstacle.position.set(x, 0.5, z);
+        }
+        
+        for (let i = 0; i < this.tracks.length; i++) {
+            this.tracks[i].position.z = TRACK_DEPTH * i;
+        }
+        
+        SPEED_Z = 20;
+        this.start();
     }
 
     update(delta) {

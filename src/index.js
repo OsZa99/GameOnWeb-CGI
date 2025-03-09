@@ -35,8 +35,7 @@ window.onload = () => {
   const restartButton = document.getElementById('restartButton');
   const gameOverScreen = document.getElementById('gameOverScreen');
   restartButton.addEventListener('click', function () {
-    gameOverScreen.style.display = 'none';
-    window.location.reload();
+    game.restart();
   });
 
 
