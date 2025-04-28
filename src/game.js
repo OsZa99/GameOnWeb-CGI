@@ -305,10 +305,10 @@ class Game {
             this.obstacles.push(obstacle);
         }
         obstacleModele.setEnabled(false);
-        obstacleModele.dispose;
+        obstacleModele.dispose();
         this.menuMusic = new Sound("menuMusic", menuMusicUrl, this.scene, undefined, { loop: true, autoplay: true, volume: 0.3 });
         this.playMusic = new Sound("playMusic", playMusicUrl, this.scene, undefined, { loop: true, autoplay: true, volume: 0.4 });
-        this.endingMusic = new Sound("menuMusic", endingMusicUrl, this.scene, null, { volume: 0.3 });
+        this.endingMusic = new Sound("endingMusic", endingMusicUrl, this.scene, null, { volume: 0.3 });
     }
 
 
