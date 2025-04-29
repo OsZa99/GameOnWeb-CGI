@@ -1,7 +1,7 @@
 import { BoundingInfo, Color3, Color4, DefaultRenderingPipeline, FreeCamera, HemisphericLight, KeyboardEventTypes, MeshBuilder, MotionBlurPostProcess, PhysicsImpostor, Scalar, Scene, SceneLoader, Sound, StandardMaterial, Texture, Vector3 } from "@babylonjs/core";
 import { Inspector } from "@babylonjs/inspector";
 
-const TRACK_WIDTH = 8;
+const TRACK_WIDTH = 10;
 const TRACK_HEIGHT = 0.1;
 const TRACK_DEPTH = 3;
 const NB_TRACKS = 50;
@@ -15,7 +15,7 @@ import meshUrl from "../assets/models/player.glb";
 import grassUrl from "../assets/textures/grass.jpg";
 import obstacle1Url from "../assets/models/obs.glb";
 import ballUrl from "../assets/models/football__soccer_ball.glb";
-import stadiumUrl from "../assets/models/stadiumV2.glb";
+import stadiumUrl from "../assets/models/stadiumV1.glb";
 import menuMusicUrl from "../assets/sounds/menuMusic.mp3";
 import playMusicUrl from "../assets/sounds/playMusic.mp3";
 import endingMusicUrl from "../assets/sounds/endingMusic.mp3";
@@ -109,21 +109,28 @@ class Game {
     restart() {
 
         this.canvas.focus();
-        
+
         this.player.position.set(0, TRACK_HEIGHT / 2, 6);
-        this.ball.position.set(0, 0.15, 7);
-        
+        this.ball.position.set(0, 0.25, 7);
+
+        let stadium = this.scene.getMeshByName("stadium");
+        if (stadium) {
+            stadium.position.set(12, 20.09, 50.37);
+            stadium.rotation.set(0, 0, 0);
+            stadium.scaling.set(2, 2, 2);
+        }
+
         for (let i = 0; i < this.obstacles.length; i++) {
             let obstacle = this.obstacles[i];
             let x = Scalar.RandomRange(-TRACK_WIDTH / 2, TRACK_WIDTH / 2);
             let z = Scalar.RandomRange(SPAWN_POS_Z - 15, SPAWN_POS_Z + 15);
             obstacle.position.set(x, 0.5, z);
         }
-        
+
         for (let i = 0; i < this.tracks.length; i++) {
             this.tracks[i].position.z = TRACK_DEPTH * i;
         }
-        
+
         SPEED_Z = 20;
         this.start();
     }
@@ -178,7 +185,7 @@ class Game {
 
         this.startTimer += delta;
 
-        if (this.score >= 60) {
+        if (this.score >= 100) {
             this.winGame();
             return;
         }
@@ -196,7 +203,7 @@ class Game {
                 this.player.position.x = 3.75;
         }
         this.ball.position.x = this.player.position.x;
-        this.ball.position.y = 0.15;
+        this.ball.position.y = 0.25;
         this.ball.position.z = this.player.position.z + 1;
     }
 
@@ -213,12 +220,14 @@ class Game {
 
         this.scene = new Scene(this.engine);
 
-        this.camera = new FreeCamera("camera1", new Vector3(0, 3.8, 0), this.scene);
+        this.camera = new FreeCamera("camera1", new Vector3(0, 3.5, 0), this.scene);
 
         this.camera.setTarget(new Vector3(0, 3, 3));
 
         this.camera.attachControl(this.canvas, true);
 
+        //this.camera.inputs.clear();
+        //this.camera.inputs.addMouse();
         var pipeline = new DefaultRenderingPipeline("default", true, this.scene, [this.camera]);
 
         pipeline.glowLayerEnabled = true;
@@ -250,15 +259,14 @@ class Game {
         this.ball = res.meshes[0];
         res.meshes[0].name = "Ball";
         this.ball.scaling = new Vector3(0.1, 0.1, 0.1);
-        this.ball.position = new Vector3(2, 0.1, 8);
-        this.ball.position.set(this.player.position.x, 0.15, this.player.position.z + 1);
+        this.ball.position.set(this.player.position.x, 0.25, this.player.position.z + 1);
 
 
-
-        let mainTrack = MeshBuilder.CreateBox("trackmiddle", { width: TRACK_WIDTH, height: TRACK_HEIGHT, depth: TRACK_DEPTH });
-        mainTrack.position = new Vector3(0, 0, 0);
-        let matRoad = new StandardMaterial("road");
-        let tex = new Texture(grassUrl);
+        let mainTrack = MeshBuilder.CreateGround("trackmiddle", { width: TRACK_WIDTH, height: TRACK_HEIGHT, subdivisions: 20}, this.scene);
+        //let mainTrack = MeshBuilder.CreateBox("trackmiddle", { width: TRACK_WIDTH, height: TRACK_HEIGHT, depth: TRACK_DEPTH });
+        mainTrack.position = new Vector3(0, 0.5, 0);
+        let matRoad = new StandardMaterial("road", this.scene);
+        let tex = new Texture(grassUrl, this.scene);
         matRoad.diffuseTexture = tex;
         mainTrack.material = matRoad;
         for (let i = 0; i < NB_TRACKS; i++) {
@@ -305,7 +313,7 @@ class Game {
             this.obstacles.push(obstacle);
         }
         obstacleModele.setEnabled(false);
-        obstacleModele.dispose();
+        obstacleModele.dispose;
         this.menuMusic = new Sound("menuMusic", menuMusicUrl, this.scene, undefined, { loop: true, autoplay: true, volume: 0.3 });
         this.playMusic = new Sound("playMusic", playMusicUrl, this.scene, undefined, { loop: true, autoplay: true, volume: 0.4 });
         this.endingMusic = new Sound("endingMusic", endingMusicUrl, this.scene, null, { volume: 0.3 });
